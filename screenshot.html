@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>udp-watch</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1e1e2e; font-family: 'Fira Code', monospace; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 40px 20px; }
+  .terminal {
+    background: #181825;
+    border-radius: 12px;
+    padding: 24px 32px;
+    color: #cdd6f4;
+    font-size: 13.5px;
+    line-height: 1.55;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    max-width: 1000px;
+    width: 100%;
+  }
+  .cyan { color: #89dceb; }
+  .green { color: #a6e3a1; }
+  .yellow { color: #f9e2af; }
+  .red { color: #f38ba8; }
+  .dim { color: #6c7086; }
+  .magenta { color: #cba6f7; }
+  .blue { color: #89b4fa; }
+  .bold { font-weight: 600; }
+  .header-box { border: 2px solid #89dceb; border-radius: 8px; padding: 12px 20px; margin-bottom: 18px; }
+  .header-box .title { color: #89dceb; font-size: 15px; font-weight: 600; letter-spacing: 0.5px; }
+  .header-box .sub { color: #6c7086; font-size: 12px; margin-top: 4px; }
+  .section-title { color: #cdd6f4; font-weight: 600; margin-top: 14px; margin-bottom: 8px; }
+  .agg-row { display: flex; gap: 22px; margin-bottom: 6px; flex-wrap: wrap; }
+  .agg-label { color: #6c7086; font-size: 11px; }
+  .agg-value { color: #cdd6f4; font-size: 15px; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 12.5px; }
+  th { color: #6c7086; text-align: left; font-weight: 400; padding: 4px 6px; border-bottom: 1px solid #45475a; font-size: 11px; }
+  td { padding: 4px 6px; white-space: nowrap; }
+  .svc { color: #6c7086; }
+  .cmd { background: #11111b; border-radius: 8px; padding: 12px 16px; margin-top: 14px; font-size: 12px; }
+  .cmd .line { color: #a6e3a1; }
+  .cmd .out { color: #cdd6f4; margin-top: 4px; }
+  .notes { margin-top: 12px; color: #6c7086; font-size: 11px; line-height: 1.5; }
+  .prompt { margin-top: 18px; color: #a6e3a1; font-size: 12px; }
+  .tag { font-size: 10px; padding: 1px 6px; border-radius: 4px; background: #313244; margin-left: 4px; }
+  .tag-hot { color: #f38ba8; }
+  .tag-ok { color: #a6e3a1; }
+</style>
+</head>
+<body>
+<div class="terminal">
+  <div class="header-box">
+    <div class="title">+=====================================================+</div>
+    <div class="title">|   Linux UDP Socket Monitor  /proc/net/udp + udp6   |</div>
+    <div class="title">+=====================================================+</div>
+    <div class="sub">Source: /proc/net/udp + /proc/net/udp6 &nbsp;·&nbsp; Snapshot: 2026-08-25 03:20:44 &nbsp;·&nbsp; --demo (busy DNS/NTP host)</div>
+  </div>
+
+  <div class="section-title">-- KPIs --</div>
+  <div class="agg-row">
+    <div>
+      <div class="agg-label">sockets</div>
+      <div class="agg-value cyan">16</div>
+    </div>
+    <div>
+      <div class="agg-label">connected</div>
+      <div class="agg-value green">3</div>
+    </div>
+    <div>
+      <div class="agg-label">unconnected</div>
+      <div class="agg-value dim">13</div>
+    </div>
+    <div>
+      <div class="agg-label">drops</div>
+      <div class="agg-value red">55</div>
+    </div>
+    <div>
+      <div class="agg-label">ipv4 / ipv6</div>
+      <div class="agg-value blue">13 / 3</div>
+    </div>
+    <div>
+      <div class="agg-label">3 sockets with drops <span class="tag tag-hot">!</span></div>
+      <div class="agg-value dim">syslog · nmbd · nmbd-dgm</div>
+    </div>
+  </div>
+
+  <div class="section-title">-- UDP sockets --</div>
+  <table>
+    <tr><th>LOCAL ADDRESS</th><th>STATE</th><th>UID</th><th>DROPS</th><th>PROC</th></tr>
+    <tr><td>0.0.0.0:53 <span class="svc">(domain)</span></td><td><span class="dim">UNCONNECTED</span></td><td>102</td><td>0</td><td>systemd-resolve</td></tr>
+    <tr><td>[::]:53 <span class="svc">(domain)</span></td><td><span class="dim">UNCONNECTED</span></td><td>102</td><td>0</td><td>systemd-resolve</td></tr>
+    <tr><td>0.0.0.0:68 <span class="svc">(bootpc)</span></td><td><span class="dim">UNCONNECTED</span></td><td>0</td><td>0</td><td>dhclient</td></tr>
+    <tr><td>0.0.0.0:123 <span class="svc">(ntp)</span></td><td><span class="dim">UNCONNECTED</span></td><td>104</td><td>0</td><td>systemd-timesyn</td></tr>
+    <tr><td>0.0.0.0:137 <span class="svc">(netbios-ns)</span></td><td><span class="dim">UNCONNECTED</span></td><td>60</td><td><span class="red">12</span></td><td>nmbd</td></tr>
+    <tr><td>0.0.0.0:138 <span class="svc">(netbios-dgm)</span></td><td><span class="dim">UNCONNECTED</span></td><td>60</td><td><span class="red">9</span></td><td>nmbd</td></tr>
+    <tr><td>0.0.0.0:161 <span class="svc">(snmp)</span></td><td><span class="dim">UNCONNECTED</span></td><td>0</td><td>0</td><td>snmpd</td></tr>
+    <tr><td>0.0.0.0:500 <span class="svc">(isakmp)</span></td><td><span class="dim">UNCONNECTED</span></td><td>0</td><td>0</td><td>charon</td></tr>
+    <tr><td>0.0.0.0:514 <span class="svc">(syslog)</span></td><td><span class="dim">UNCONNECTED</span></td><td>101</td><td><span class="red">34</span></td><td>rsyslogd <span class="tag tag-hot">! drops</span></td></tr>
+    <tr><td>0.0.0.0:4500 <span class="svc">(ipsec-nat-t)</span></td><td><span class="dim">UNCONNECTED</span></td><td>0</td><td>0</td><td>charon</td></tr>
+    <tr><td>0.0.0.0:5355 <span class="svc">(llmnr)</span></td><td><span class="dim">UNCONNECTED</span></td><td>102</td><td>0</td><td>systemd-resolve</td></tr>
+    <tr><td>0.0.0.0:10000 <span class="svc">(webmin)</span></td><td><span class="dim">UNCONNECTED</span></td><td>119</td><td>0</td><td>miniserv.pl</td></tr>
+    <tr><td>127.0.0.1:52341</td><td><span class="green">CONNECTED</span></td><td>102</td><td>0</td><td>systemd-resolve</td></tr>
+    <tr><td>127.0.0.1:52342</td><td><span class="green">CONNECTED</span></td><td>102</td><td>0</td><td>systemd-resolve</td></tr>
+    <tr><td>[2001:db8::1]:52350</td><td><span class="green">CONNECTED</span></td><td>102</td><td>0</td><td>systemd-resolve</td></tr>
+  </table>
+
+  <div class="cmd">
+    <div class="line">$ ./udp-watch --file sample-udp.table --drops --no-color</div>
+    <div class="out">3 sockets with drops &nbsp;·&nbsp; 55 packets discarded &nbsp;·&nbsp; rsyslogd(34) nmbd(12) nmbd-dgm(9) <span class="tag tag-hot">!</span></div>
+    <div class="line" style="margin-top:8px">$ ./udp-watch --demo --json | python3 -m json.tool | head -8</div>
+    <div class="out">{
+  "summary": {
+    "ts": 1787627907,
+    "total": 16,
+    "ipv4": 13,
+    "ipv6": 3,
+    "connected": 3,
+    "unconnected": 13,
+    "drops": 55,</div>
+  </div>
+
+  <div class="notes">Estados: 0x01 CONNECTED (con connect(2)) · 0x07 UNCONNECTED &nbsp;|&nbsp; direcciones IPv6 decodificadas byte-swapped con compresión :: &nbsp;|&nbsp; inode → PID vía /proc/*/fd &nbsp;|&nbsp; --no-color 0 escapes ANSI &nbsp;|&nbsp; selftest 45 checks</div>
+
+  <div class="prompt">$ udp-watch — g++ -std=c++23 -O2 -Wall -Wextra src/main.cpp -o udp-watch &nbsp;▲ zero deps</div>
+</div>
+</body>
+</html>
